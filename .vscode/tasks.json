@@ -1,0 +1,77 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "cmake",
+            "command": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Flash with OpenOCD",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "${workspaceFolder}/openocd.cfg",
+                "-c",
+                // 【修正点 1】路径改为 CMake 实际输出的路径
+                // 注意：这里假设你的项目名(ProjectName)是 study，如果是别的请修改 study.elf
+                "program ./build/kielas/study.elf verify reset exit"
+            ],
+            "dependsOn": "build", // 烧录前自动先编译
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Build File",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "./build/kielas", // 【修正点 2】清理目标的路径
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Remove CMake Cache",
+            "type": "shell",
+            // 【修正点 3】物理删除整个 out 文件夹，这才是彻底清理
+            "command": "if (Test-Path ${workspaceFolder}/out) { Remove-Item -Recurse -Force ${workspaceFolder}/out }",
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure All Projects",
+            "type": "cmake",
+            "command": "configure",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Flash AND Start Debug (Ozone)",
+            "type": "shell",
+            "command": "Ozone",
+            "args": [
+                "${workspaceFolder}\\DBG\\DBG.jdebug"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
