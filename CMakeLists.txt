@@ -60,6 +60,7 @@ endfunction()
 
 ###############################在此处添加你的文件路径#########
 USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/motor)
+USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/encoder)
 
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD

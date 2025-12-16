@@ -1,4 +1,5 @@
 #include "motor.h"
+#include "stm32f1xx_hal_tim.h"
 #include <stdint.h>
 void Motor_init(Motor_t *motor)
 {
@@ -49,3 +50,6 @@ void Motor_run(Motor_t *motor, float speed){
     }
 }
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+
+}
