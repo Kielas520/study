@@ -62,6 +62,7 @@ endfunction()
 USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/motor)
 USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/encoder)
 USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/oled)
+USER_ADD_DIR(${CMAKE_SOURCE_DIR}/src/mpu6050)
 
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
