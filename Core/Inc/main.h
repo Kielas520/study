@@ -63,6 +63,10 @@ void Error_Handler(void);
 #define MOTOR_IN1_GPIO_Port GPIOA
 #define MOTOR_IN2_Pin GPIO_PIN_7
 #define MOTOR_IN2_GPIO_Port GPIOA
+#define OLED_GND_Pin GPIO_PIN_0
+#define OLED_GND_GPIO_Port GPIOB
+#define OLED_VCC_Pin GPIO_PIN_1
+#define OLED_VCC_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

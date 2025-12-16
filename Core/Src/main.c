@@ -93,17 +93,54 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C2_Init();
+/* USER CODE BEGIN 1 */
+  // 定义一个变量用来测试动态显示（可选）
+  uint8_t debug_cnt = 0;
+  /* USER CODE END 1 */
+
   /* USER CODE BEGIN 2 */
-  OLED_Init();
-  Motor_init(&M0);
+  OLED_Init();       // 1. 初始化屏幕
+  OLED_Clear();      // 2. 上电清屏（重要，防止花屏）
+
+  Motor_init(&M0);   // 3. 电机初始化
+
+  // --- 静态UI绘制 (只刷一次，不占用while循环资源) ---
+
+  // 第1行：显示标题
+  OLED_ShowString(1, 1, "Motor Control");
+
+  // 第2行：显示当前设定的速度 (十进制)
+  OLED_ShowString(2, 1, "Spd Dec: 70");
+
+  // 第3行：显示速度的二进制 (测试你的 ShowBinNum 函数)
+  // 70 的二进制是 01000110
+  OLED_ShowString(3, 1, "Bin: ");
+  OLED_ShowBinNum(3, 6, 70, 8); // 在第3行第6列开始，显示8位长度
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Motor_run(&M0,70);
-    OLED_Full();
+    // 电机持续运行
+    Motor_run(&M0, 70);
+
+    // --- 动态刷新区域 ---
+
+    // 第4行：显示一个不断变化的计数器，测试二进制显示的动态效果
+    // 效果：你会看到最低位 0->1->0->1 快速变化
+    OLED_ShowString(4, 1, "T:");     // Label
+    OLED_ShowBinNum(4, 4, debug_cnt, 8); // 显示计数器的二进制
+    OLED_ShowNum(4, 13, debug_cnt, 3);   // 显示计数器的十进制对照
+
+    debug_cnt++; // 计数器自增
+
+    // 这里的延时很重要！
+    // 1. 如果没有延时，OLED刷新太快，数字会看不清（重影）。
+    // 2. 如果没有延时，I2C通信太频繁会占用大量CPU时间，可能影响电机控制的稳定性。
+    HAL_Delay(100);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

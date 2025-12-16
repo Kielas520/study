@@ -11,26 +11,17 @@ extern "C" {
 #define OLED_ADDR       0x78 // I2C地址
 #define OLED_CMD_MODE   0x00 // 命令模式
 #define OLED_DATA_MODE  0x40 // 数据模式
+#define OLEDIIC &hi2c2 // I2C句柄
 
-// 这是一个字模数组的片段
-// 格式：const unsigned char F8X16[]
-const unsigned char F8X16[] = {
-    // ... 前面是其他字符 ...
-
-    // --- 这里是字符 'A' 的数据 (索引位置通常是 'A' - ' ' = 33) ---
-
-    // 上半身 (Page 0 的 8 列)
-    0x00, 0xE0, 0x1C, 0x02, 0x02, 0x1C, 0xE0, 0x00,
-
-    // 下半身 (Page 1 的 8 列)
-    0x00, 0x0F, 0x08, 0x08, 0x08, 0x08, 0x0F, 0x00,
-
-    // ... 后面是字符 'B' ...
-};
-
+void OLED_Power_On();
 void OLED_Init(void);
 void OLED_Clear(void);
-void OLED_Full(void);
+void OLED_ShowChar(uint8_t Line, uint8_t Column, char Char);
+void OLED_ShowString(uint8_t Line, uint8_t Column, char *String);
+void OLED_ShowNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length);
+void OLED_ShowSignedNum(uint8_t Line, uint8_t Column, int32_t Number, uint8_t Length);
+void OLED_ShowHexNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length);
+void OLED_ShowBinNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length);
 
 #ifdef __cplusplus
 }
