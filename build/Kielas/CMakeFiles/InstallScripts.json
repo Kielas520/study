@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/project/study/build/Kielas/cmake_install.cmake",
-		"C:/project/study/build/Kielas/cmake/stm32cubemx/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

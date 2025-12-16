@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motor.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,17 +94,16 @@ int main(void)
   MX_TIM3_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
+  OLED_Init();
   Motor_init(&M0);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // HAL_TIM_PWM_Start(M0.mtim, M0.channel);
-    // __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 1000);
     Motor_run(&M0,70);
+    OLED_Full();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
