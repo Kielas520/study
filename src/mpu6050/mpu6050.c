@@ -75,29 +75,28 @@ uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
     uint8_t check;
     uint8_t Data;
 
-    // check device ID WHO_AM_I
-
+    // 1. 检查设备 ID
     HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, WHO_AM_I_REG, 1, &check, 1, i2c_timeout);
 
-    if (check == 104) // 0x68 will be returned by the sensor if everything goes well
+    if (check == 104) // 0x68
     {
-        // power management register 0X6B we should write all 0's to wake the sensor up
+        // 2. 唤醒传感器
         Data = 0;
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, PWR_MGMT_1_REG, 1, &Data, 1, i2c_timeout);
 
-        // Set DATA RATE of 1KHz by writing SMPLRT_DIV register
+        // 3. 设置采样率分频 (Sample Rate Divider)
         Data = 0x07;
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, SMPLRT_DIV_REG, 1, &Data, 1, i2c_timeout);
 
-        // Set accelerometer configuration in ACCEL_CONFIG Register
-        // XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0 -> � 2g
+        // 4. 配置加速度计 (±2g) - 保持不变
         Data = 0x00;
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, ACCEL_CONFIG_REG, 1, &Data, 1, i2c_timeout);
 
-        // Set Gyroscopic configuration in GYRO_CONFIG Register
-        // XG_ST=0,YG_ST=0,ZG_ST=0, FS_SEL=0 -> � 250 �/s
-        Data = 0x00;
+        // 5. 【关键修改】配置陀螺仪量程
+        // FS_SEL = 3 (二进制 0001 1000 = 0x18) -> 量程 ±2000 °/s
+        Data = 0x18;
         HAL_I2C_Mem_Write(I2Cx, MPU6050_ADDR, GYRO_CONFIG_REG, 1, &Data, 1, i2c_timeout);
+
         return 0;
     }
     return 1;
@@ -181,9 +180,10 @@ void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
     DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
     DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
     DataStruct->Temperature = (float)((int16_t)temp / (float)340.0 + (float)36.53);
-    DataStruct->Gx = DataStruct->Gyro_X_RAW / 131.0;
-    DataStruct->Gy = DataStruct->Gyro_Y_RAW / 131.0;
-    DataStruct->Gz = DataStruct->Gyro_Z_RAW / 131.0;
+    // 对应 ±2000dps 的灵敏度系数是 16.4 LSB/(°/s)
+    DataStruct->Gx = DataStruct->Gyro_X_RAW / 16.4;
+    DataStruct->Gy = DataStruct->Gyro_Y_RAW / 16.4;
+    DataStruct->Gz = DataStruct->Gyro_Z_RAW / 16.4;
 
     // Kalman angle solve
     double dt = (double)(HAL_GetTick() - timer) / 1000;

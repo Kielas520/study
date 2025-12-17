@@ -65,11 +65,14 @@ void Motor_Key_Control(Motor_t *motor, Key_Value *key_val)
     // ----------------------
     if (key_val->dec == 1)
     {
-        motor->speed -= 10;
+        motor->speed -= 2;
 
         // 限制最小速度 (假设最大反转是 -100)
-        if (motor->speed < -MOTOR_MAX_SPEED)
-            motor->speed = -MOTOR_MAX_SPEED;
+        if(motor->speed > -12 && motor->speed <= 12){
+            motor->speed = -12;
+        }
+        if (motor->speed < -MOTOR_MAX_SPEED + 22)
+            motor->speed = -MOTOR_MAX_SPEED + 22;
 
         // 【关键】消费掉这个指令，防止一次按键无限减速
         key_val->dec = 0;
@@ -80,11 +83,13 @@ void Motor_Key_Control(Motor_t *motor, Key_Value *key_val)
     // ----------------------
     else if (key_val->inc == 1)
     {
-        motor->speed += 10;
-
+        motor->speed += 2;
+        if (motor->speed < 12 && motor->speed > -12){
+            motor->speed = 12;
+        }
         // 限制最大速度
-        if (motor->speed > MOTOR_MAX_SPEED)
-            motor->speed = MOTOR_MAX_SPEED;
+        if (motor->speed > MOTOR_MAX_SPEED - 22)
+            motor->speed = MOTOR_MAX_SPEED - 22;
 
         // 【关键】消费掉这个指令
         key_val->inc = 0;

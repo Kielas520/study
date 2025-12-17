@@ -112,6 +112,7 @@ int main(void)
   OLED_ShowString(2, 1, "Run:");   // 第2行显示开关状态
   OLED_ShowString(3, 1, "Dec:");   // 第3行显示减速键状态
   OLED_ShowString(3, 9, "Inc:");   // 第3行显示加速键状态
+  OLED_ShowString(4, 3, "F:");
 
   /* USER CODE END 2 */
 
@@ -149,7 +150,7 @@ int main(void)
         oled_tick = HAL_GetTick(); // 更新时间戳
 
         // 把这行代码放在这里，它就只会在每200ms执行一次
-        OLED_ShowSignedNum(4, 6, MPU6050.Gz, 8);
+        OLED_ShowSignedNum(4, 6, MPU6050.Gz, 5);
 
     }
 

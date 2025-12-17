@@ -9,7 +9,7 @@ extern "C" {
 #include "gpio.h"
 #include "key_num.h"
 
-#define MOTOR_MAX_SPEED 100.0
+#define MOTOR_MAX_SPEED 50.0
 #define CMP_MAX_VAL htim2.Init.Period
 
 typedef struct {
