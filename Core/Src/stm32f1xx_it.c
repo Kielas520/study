@@ -20,9 +20,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
-#include "key_num.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "key_num.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -210,10 +210,8 @@ void EXTI3_IRQHandler(void)
 
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_SWITCH_Pin);
-  // 传入具体的引脚号
-  Key_EXTI_Scan(GPIO_SWITCH_Pin, &Key_Val);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
-
+  Key_EXTI_Scan(GPIO_SWITCH_Pin, &Key_Val);
   /* USER CODE END EXTI3_IRQn 1 */
 }
 
@@ -269,7 +267,6 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 0 */
   // HAL_GPIO_EXTI_IRQHandler(GPIO_INC_Pin);
   // HAL_GPIO_EXTI_IRQHandler(GPIO_DEC_Pin);
-
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
   // 方法 A：简单粗暴，分别检查并清除，然后尝试处理
   // 这种写法假设你确定只有这两个引脚在这个中断线上

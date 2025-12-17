@@ -63,8 +63,15 @@ Kalman_t KalmanY = {
     .R_measure = 0.03f,
 };
 
+void MPU6050_Power_On(){
+  HAL_GPIO_WritePin(MPU_GND_GPIO_Port, MPU_GND_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MPU_VCC_GPIO_Port, MPU_VCC_Pin, GPIO_PIN_SET);
+  HAL_Delay(200); // 等待MPU上电稳定
+}
+
 uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
 {
+    MPU6050_Power_On();
     uint8_t check;
     uint8_t Data;
 

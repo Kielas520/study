@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
-#include "stm32f1xx_hal_gpio.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -49,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint8_t mpu_read_flag = 0; // 新增标志位，volatile 防止被编译器优化
+static uint32_t oled_tick = 0; // [新增] 用来记录OLED刷新时间的静态变量
 static Motor_t M0;
 MPU6050_t MPU6050;
 uint8_t Key_Val;
@@ -122,12 +121,7 @@ int main(void)
   {
     Process_Key_Num(&Key_Ctrl, &Key_Val); // 1. 把按键转换为结构体里的 0/1 指令
 
-    // --- 检查标志位，在主循环里读取传感器 ---
-    if (mpu_read_flag == 1)
-    {
-        MPU6050_Read_All(&hi2c1, &MPU6050);
-        mpu_read_flag = 0; // 清除标志位
-    }
+    MPU6050_Read_All(&hi2c1, &MPU6050);
 
     // --- 2. 动态刷新区域 (显示当前状态) ---
     // 注意：必须放在 Motor_Key_Control 之前！
@@ -149,7 +143,15 @@ int main(void)
     // 显示按键指令状态 (你会看到按下时数字短暂变 1)
     OLED_ShowNum(3, 5, Key_Ctrl.dec, 1);
     OLED_ShowNum(3, 13, Key_Ctrl.inc, 1);
-    OLED_ShowSignedNum(4, 6, MPU6050.Gx, 4);
+    // [修改] 使用 HAL_GetTick 实现每 200ms 刷新一次 MPU6050 数据
+    if (HAL_GetTick() - oled_tick >= 20)
+    {
+        oled_tick = HAL_GetTick(); // 更新时间戳
+
+        // 把这行代码放在这里，它就只会在每200ms执行一次
+        OLED_ShowSignedNum(4, 6, MPU6050.Gz, 8);
+
+    }
 
 
     // --- 3. 执行电机控制 ---
@@ -208,11 +210,7 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM4)
-    {
-        // 仅仅设置标志位，立即退出中断
-        mpu_read_flag = 1;
-    }
+
 }
 /* USER CODE END 4 */
 

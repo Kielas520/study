@@ -48,6 +48,8 @@ typedef struct
     double P[2][2];
 } Kalman_t;
 
+void MPU6050_Power_On();
+
 uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx);
 
 void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
