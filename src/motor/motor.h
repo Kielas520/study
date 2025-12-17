@@ -4,8 +4,10 @@
 extern "C" {
 #endif
 
+#include"main.h"
 #include "tim.h"
 #include "gpio.h"
+#include "key_num.h"
 
 #define MOTOR_MAX_SPEED 100.0
 #define CMP_MAX_VAL htim2.Init.Period
@@ -18,10 +20,12 @@ typedef struct {
   GPIO_TypeDef *GPIOINx;
   uint16_t in1;
   uint16_t in2;
+  int speed;
 }Motor_t;
 
 void Motor_init(Motor_t *motor);
 void Motor_run(Motor_t *motor, float speed);
+void Motor_Key_Control(Motor_t *motor, Key_Value *key_val);
 
 #ifdef __cplusplus
 }
