@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+extern uint8_t Key_Val;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -69,10 +69,13 @@ void Error_Handler(void);
 #define OLED_VCC_GPIO_Port GPIOB
 #define GPIO_INC_Pin GPIO_PIN_13
 #define GPIO_INC_GPIO_Port GPIOB
+#define GPIO_INC_EXTI_IRQn EXTI15_10_IRQn
 #define GPIO_DEC_Pin GPIO_PIN_15
 #define GPIO_DEC_GPIO_Port GPIOB
+#define GPIO_DEC_EXTI_IRQn EXTI15_10_IRQn
 #define GPIO_SWITCH_Pin GPIO_PIN_3
 #define GPIO_SWITCH_GPIO_Port GPIOB
+#define GPIO_SWITCH_EXTI_IRQn EXTI3_IRQn
 
 /* USER CODE BEGIN Private defines */
 

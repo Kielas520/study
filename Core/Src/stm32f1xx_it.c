@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
+#include "key_num.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -208,7 +209,9 @@ void EXTI3_IRQHandler(void)
   /* USER CODE BEGIN EXTI3_IRQn 0 */
 
   /* USER CODE END EXTI3_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_SWITCH_Pin);
+  // 传入具体的引脚号
+  Key_EXTI_Scan(GPIO_SWITCH_Pin, &Key_Val);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   /* USER CODE END EXTI3_IRQn 1 */
@@ -254,6 +257,34 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  // HAL_GPIO_EXTI_IRQHandler(GPIO_INC_Pin);
+  // HAL_GPIO_EXTI_IRQHandler(GPIO_DEC_Pin);
+
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+  // 方法 A：简单粗暴，分别检查并清除，然后尝试处理
+  // 这种写法假设你确定只有这两个引脚在这个中断线上
+  if(__HAL_GPIO_EXTI_GET_IT(GPIO_INC_Pin) != RESET)
+  {
+      HAL_GPIO_EXTI_IRQHandler(GPIO_INC_Pin);
+      Key_EXTI_Scan(GPIO_INC_Pin, &Key_Val);
+  }
+
+  if(__HAL_GPIO_EXTI_GET_IT(GPIO_DEC_Pin) != RESET)
+  {
+      HAL_GPIO_EXTI_IRQHandler(GPIO_DEC_Pin);
+      Key_EXTI_Scan(GPIO_DEC_Pin, &Key_Val);
+  }
+  /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

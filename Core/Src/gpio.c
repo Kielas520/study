@@ -55,12 +55,6 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, OLED_GND_Pin|OLED_VCC_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /*Configure GPIO pins : MOTOR_STBY_Pin MOTOR_IN1_Pin MOTOR_IN2_Pin */
   GPIO_InitStruct.Pin = MOTOR_STBY_Pin|MOTOR_IN1_Pin|MOTOR_IN2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -77,13 +71,16 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : GPIO_INC_Pin GPIO_DEC_Pin GPIO_SWITCH_Pin */
   GPIO_InitStruct.Pin = GPIO_INC_Pin|GPIO_DEC_Pin|GPIO_SWITCH_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 

@@ -30,40 +30,38 @@ void Process_Key_Num(Key_Value *Key_Data, uint8_t *Key_Val) // 建议改名 Key_
 }
 
 /**
- * @brief  通用的按键扫描核心逻辑 (放在定时器中断里调用)
+ * @brief  EXTI中断专用的按键处理函数
+ * @param  GPIO_Pin: 触发中断的引脚号 (从中断回调函数传入)
+ * @param  Key_Val:  键值指针
  */
-void Key_Timer_Scan(uint8_t *Key_Val)
+void Key_EXTI_Scan(uint16_t GPIO_Pin, uint8_t *Key_Val)
 {
+    // 遍历列表，找到是哪个按键对应的引脚触发了中断
     for (uint8_t i = 0; i < KEY_COUNT; i++)
     {
-        // 获取当前按键的指针，方便操作
         Key_Config_t *pKey = &Key_List[i];
 
-        // --- 核心扫描逻辑 ---
-
-        // 1. 如果检测到低电平 (按下)
-        if (HAL_GPIO_ReadPin(pKey->port, pKey->pin) == GPIO_PIN_RESET)
+        // 1. 匹配引脚：只处理当前触发中断的那个按键
+        if (pKey->pin == GPIO_Pin)
         {
-            // 计数器未达标，继续累加
-            if (pKey->count < KEY_DEBOUNCE_TICKS)
+            // 2. 再次确认电平（可选，增强稳定性）：
+            // 确保当前确实是低电平（按下状态），防止噪声引起的误触发
+            if (HAL_GPIO_ReadPin(pKey->port, pKey->pin) == GPIO_PIN_RESET)
             {
-                pKey->count++;
-            }
+                // 3. 核心逻辑：时间差消抖
+                // 获取当前系统滴答时间
+                uint32_t current_tick = HAL_GetTick();
 
-            // 计数器达标 (说明按下时间足够长，消抖通过)
-            if (pKey->count >= KEY_DEBOUNCE_TICKS)
-            {
-                if (pKey->lock == 0) // 如果没上锁
+                // 如果 (当前时间 - 上次时间) > 消抖阈值，说明是一次新的有效按下
+                // 注意：这里利用了无符号整数溢出回绕特性，即使 tick 溢出也能正常工作
+                if ((current_tick - pKey->last_tick) > KEY_DEBOUNCE_TIME)
                 {
-                    *Key_Val = pKey->id; // 触发按键事件
-                    pKey->lock = 1;     // 上锁，防止连发
+                    *Key_Val = pKey->id;      // 输出键值
+                    pKey->last_tick = current_tick; // 更新最后一次触发时间
                 }
             }
-        }
-        else // 2. 如果检测到高电平 (松开)
-        {
-            pKey->count = 0; // 清空计数器
-            pKey->lock = 0;  // 解锁，允许下一次触发
+            // 找到对应的按键后，直接退出循环，提高效率
+            break;
         }
     }
 }

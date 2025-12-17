@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
+#include "stm32f1xx_hal_gpio.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -100,8 +101,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim3);
-  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_Base_Start_IT(&htim4);  
   OLED_Init();       // 1. 初始化屏幕
   OLED_Clear();      // 2. 上电清屏（重要，防止花屏）
   while (MPU6050_Init(&hi2c1) == 1);
@@ -142,7 +142,7 @@ int main(void)
     OLED_ShowNum(3, 13, Key_Ctrl.inc, 1);
     OLED_ShowSignedNum(4, 6, MPU6050.Gx, 4);
 
-    
+
     // --- 3. 执行电机控制 ---
     // 这一步会读取 Key_Ctrl，执行加速/减速，然后把 dec/inc 归零
     Motor_Key_Control(&M0, &Key_Ctrl);
@@ -199,10 +199,6 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM3)
-    {
-        Key_Timer_Scan(&Key_Val); // 直接调用封装好的扫描函数
-    }
     if (htim->Instance == TIM4)
     {
         // --- 4. 传感器读取 (如果不显示可以注释掉，节省时间) ---
