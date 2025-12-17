@@ -49,6 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+volatile uint8_t mpu_read_flag = 0; // 新增标志位，volatile 防止被编译器优化
 static Motor_t M0;
 MPU6050_t MPU6050;
 uint8_t Key_Val;
@@ -101,7 +102,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim4);  
+  HAL_TIM_Base_Start_IT(&htim4);
   OLED_Init();       // 1. 初始化屏幕
   OLED_Clear();      // 2. 上电清屏（重要，防止花屏）
   while (MPU6050_Init(&hi2c1) == 1);
@@ -120,6 +121,14 @@ int main(void)
   while (1)
   {
     Process_Key_Num(&Key_Ctrl, &Key_Val); // 1. 把按键转换为结构体里的 0/1 指令
+
+    // --- 检查标志位，在主循环里读取传感器 ---
+    if (mpu_read_flag == 1)
+    {
+        MPU6050_Read_All(&hi2c1, &MPU6050);
+        mpu_read_flag = 0; // 清除标志位
+    }
+
     // --- 2. 动态刷新区域 (显示当前状态) ---
     // 注意：必须放在 Motor_Key_Control 之前！
     // 否则 dec/inc 被执行完就变成 0 了，屏幕上看不见变化。
@@ -201,8 +210,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM4)
     {
-        // --- 4. 传感器读取 (如果不显示可以注释掉，节省时间) ---
-        MPU6050_Read_All(&hi2c1, &MPU6050);
+        // 仅仅设置标志位，立即退出中断
+        mpu_read_flag = 1;
     }
 }
 /* USER CODE END 4 */
